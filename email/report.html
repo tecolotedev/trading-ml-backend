@@ -1,0 +1,108 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head>
+        <title>Report email</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <style type="text/css">
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
+            * {
+                border:0px;
+                margin: 0px;
+                font-family: 'Roboto', sans-serif;
+
+            }
+            #img-stori-logo{
+                height: 80px;
+            }
+            #wrapper{
+                padding: 20px
+            }            
+            
+            #report {
+                font-family: Arial, Helvetica, sans-serif;
+                border-collapse: collapse;
+                width: 75%;
+            }
+         
+            #report tr th{
+                background: #00d180;
+            }
+
+            #report td, #report th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            #report tr:nth-child(even){background-color: #f2f2f2;}
+            #report tr:nth-child(odd){background-color: white;}
+
+            th,td{
+                color: white;
+            }
+
+            #report th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #003a40;;
+                color: white;
+            }
+            h3 {
+                color: white;
+            }
+            h2{
+                text-align: center;
+                color: white;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div style="background:#003a40; padding: 20px;">
+            <div>
+                <img id="img-stori-logo" src="https://res.cloudinary.com/dfl1tke7p/image/upload/f_auto,q_auto/tyzmnjksxy6usxgpzpoe" alt="logo stori" />
+            </div>
+            <div id="wrapper">
+                    
+                <h2>Last report for your account with id: "{{.Id}}"</h2>
+                
+                <center>
+                    <table id="report">
+                        <tr>
+                            <th>Date</th>
+                            <th>Transaction</th>
+                            <th>Reason</th>
+                        </tr>
+                        {{range .LastRecords}}
+                            <tr>
+                                <td>{{.Date}}</td>
+                                <td>{{.Transaction}}</td>
+                                <td>{{.Reason}}</td>
+                            </tr>
+                        {{end}}
+                    </table>
+                </center>
+                <h3>Last Balance: ${{.Balance}}</h3>
+
+                <h2>Full summary per month</h2>
+                <center>
+                    <table id="report">
+                        <tr>
+                            <th>Month</th>
+                            <th>Type</th>
+                            <th>Average</th>
+                        </tr>
+                        {{range .AllTransfers}}
+                            <tr>
+                                <td>{{.Month}}</td>
+                                <td>{{.Type}}</td>
+                                <td>{{.Average}}</td>
+                            </tr>
+                        {{end}}
+                    </table>
+                </center>
+            </div>
+        </div>
+    </body>
+</html>

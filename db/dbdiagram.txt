@@ -1,0 +1,28 @@
+Table users {
+  id integer [primary key]
+  username varchar [not null]
+  password  varchar [not null]
+  email varchar [not null, unique]
+  role varchar
+  verified boolean [default: false]
+  created_at timestamp [default: `now()`]
+}
+
+Table accounts {
+  id integer [primary key]
+  balance double [default: 0]
+  currency varchar [not null]
+  created_at timestamp [default: `now()`]
+  user_id integer
+}
+
+Table transfers {
+  id integer [primary key]
+  amount double [not null]
+  reason varchar
+  account_id integer
+  created_at timestamp [not null]
+}
+
+Ref: accounts.user_id > users.id // many-to-one
+Ref: transfers.account_id > accounts.id // many-to-one

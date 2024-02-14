@@ -1,0 +1,49 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head>
+        <title>Signup email</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+
+        <style type="text/css">
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
+            * {
+                border:0px;
+                margin: 0px;
+                font-family: 'Roboto', sans-serif;
+
+            }
+            #img-stori-logo{
+                height: 80px;
+            }
+
+            #greeting{
+                color:white
+            }
+            button{
+                margin-top: 10px;
+                padding: 10px;
+                border-radius: 10px;
+                background: #00d180;
+                color: #003a40;
+                cursor: pointer;
+            }
+         
+
+
+        </style>
+    </head>
+    <body>
+        <div style="background:#003a40; padding: 20px;">
+            <div>
+                <img id="img-stori-logo" src="https://res.cloudinary.com/dfl1tke7p/image/upload/f_auto,q_auto/tyzmnjksxy6usxgpzpoe" alt="logo stori" />
+            </div>
+            <center>
+                <p id="greeting">Hey {{.Name}} we are exited to have you in stori, please confirm you account clicking the button below: </p>
+            </center>
+            <center>
+               <a href="{{.UrlSignup}}" target="_blank"><button>Verify Account</button></a>
+            </center>
+        </div>
+    </body>
+</html>
