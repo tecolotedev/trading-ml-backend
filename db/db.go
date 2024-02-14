@@ -3,17 +3,20 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/tecolotedev/trading-ml-backend/config"
 	sqlc "github.com/tecolotedev/trading-ml-backend/sqlc/code"
+	"github.com/tecolotedev/trading-ml-backend/utils"
 )
+
+var pack = "db"
 
 var Queries sqlc.Queries
 var Conn *pgx.Conn
 
 func InitDb() {
+	utils.Log.InfoLog("Initiating postgres db", pack)
 	ctx := context.Background()
 
 	sslConn := "allow"
@@ -32,11 +35,17 @@ func InitDb() {
 
 	conn, err := pgx.Connect(ctx, configConn)
 	if err != nil {
-		log.Fatal(err)
+		utils.Log.FatalLog(err, pack)
 	}
 
-	Queries = *sqlc.New(conn) //sqlc_.New(conn)
+	Queries = *sqlc.New(conn)
 	Conn = conn
+
+	err = conn.Ping(ctx)
+	if err != nil {
+		utils.Log.FatalLog(err, pack)
+	}
+
 }
 
 // Postgres transactions to make safetly money's movements
@@ -45,7 +54,7 @@ func MakeTx(ctx context.Context, transactions func() error) error {
 	tx, err := Conn.BeginTx(ctx, pgx.TxOptions{})
 
 	if err != nil {
-		return fmt.Errorf("error init Tx")
+		return err
 	}
 
 	tx.Begin(ctx)

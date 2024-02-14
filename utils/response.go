@@ -9,9 +9,9 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-func SendError(c *fiber.Ctx, message string, status int) error {
+func SendError(c *fiber.Ctx, err error, status int) error {
 	c.Status(status)
-	res := ErrorResponse{Ok: false, Message: message}
+	res := ErrorResponse{Ok: false, Message: err.Error()}
 	return c.JSON(res)
 }
 

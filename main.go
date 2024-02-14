@@ -1,18 +1,22 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/tecolotedev/trading-ml-backend/config"
+	"github.com/tecolotedev/trading-ml-backend/db"
 	"github.com/tecolotedev/trading-ml-backend/routes"
+	"github.com/tecolotedev/trading-ml-backend/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
 
+var pack = "main"
+
 func main() {
 	config.SetUpConfig()
+	db.InitDb()
 
 	app := fiber.New()
 
@@ -54,6 +58,6 @@ func main() {
 
 	routes.SetUpRoutes(app)
 
-	log.Fatal((app.Listen(":" + config.EnvVars.PORT)))
+	utils.Log.FatalLog(app.Listen(":"+config.EnvVars.PORT), pack)
 
 }

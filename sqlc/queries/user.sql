@@ -6,7 +6,7 @@ INSERT INTO users (
 )
 VALUES (
     $1, $2, $3
-) RETURNING id,username,email,created_at;
+) RETURNING id,username,email,verified,created_at;
 
 -- name: GetUser :one
 SELECT * FROM users
