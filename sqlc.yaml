@@ -14,10 +14,10 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    queries: "./db/queries"
-    schema: "./db/migrations"
+    queries: "./sqlc/queries"
+    schema: "./sqlc/migrations"
     gen:
       go:
-        package: "sqlc_code"
-        out: "db/sqlc_code"
+        package: "sqlc"
+        out: "sqlc/code"
         sql_package: "pgx/v5"

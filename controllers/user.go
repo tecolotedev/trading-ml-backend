@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/tecolotedev/stori_back/db"
-	"github.com/tecolotedev/stori_back/db/sqlc_code"
-	"github.com/tecolotedev/stori_back/email"
-	"github.com/tecolotedev/stori_back/utils"
+	"github.com/tecolotedev/trading-ml-backend/db"
+	"github.com/tecolotedev/trading-ml-backend/email"
+	sqlc "github.com/tecolotedev/trading-ml-backend/sqlc/code"
+	"github.com/tecolotedev/trading-ml-backend/utils"
 )
 
 type loginRequest struct {
@@ -99,7 +99,7 @@ func Signup(c *fiber.Ctx) error {
 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
-	params := sqlc_code.CreateUserParams{
+	params := sqlc.CreateUserParams{
 		Username: signupBody.Username,
 		Email:    signupBody.Email,
 		Password: hashedPassword,

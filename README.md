@@ -5,7 +5,7 @@
 ```bash
 $ docker run --name postgres15 -p 5432:5432 -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=secret -d postgres:15.0-alpine
 
-$ docker exec -it postgres15 createdb --username=admin --owner=admin stori_db
+$ docker exec -it postgres15 createdb --username=admin --owner=admin app_db
 ```
 
 ## Drop database if needed

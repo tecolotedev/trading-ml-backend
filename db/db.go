@@ -6,11 +6,11 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/tecolotedev/stori_back/config"
-	"github.com/tecolotedev/stori_back/db/sqlc_code"
+	"github.com/tecolotedev/trading-ml-backend/config"
+	sqlc "github.com/tecolotedev/trading-ml-backend/sqlc/code"
 )
 
-var Queries *sqlc_code.Queries
+var Queries sqlc.Queries
 var Conn *pgx.Conn
 
 func InitDb() {
@@ -35,7 +35,7 @@ func InitDb() {
 		log.Fatal(err)
 	}
 
-	Queries = sqlc_code.New(conn)
+	Queries = *sqlc.New(conn) //sqlc_.New(conn)
 	Conn = conn
 }
 

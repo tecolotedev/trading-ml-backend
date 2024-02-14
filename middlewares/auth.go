@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/tecolotedev/stori_back/utils"
+	"github.com/tecolotedev/trading-ml-backend/utils"
 )
 
 func Auth(c *fiber.Ctx) error {

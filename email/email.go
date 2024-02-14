@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/go-mail/mail"
-	"github.com/tecolotedev/stori_back/config"
+	"github.com/tecolotedev/trading-ml-backend/config"
 )
 
 // Fill template for signup email

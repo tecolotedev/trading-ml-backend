@@ -3,7 +3,7 @@
 //   sqlc v1.24.0
 // source: user.sql
 
-package sqlc_code
+package sqlc
 
 import (
 	"context"
@@ -48,7 +48,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, password, email, created_at, verified FROM users
+SELECT id, username, password, email, verified, created_at FROM users
 where email = $1
 `
 
@@ -60,14 +60,14 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 		&i.Username,
 		&i.Password,
 		&i.Email,
-		&i.CreatedAt,
 		&i.Verified,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, username, password, email, created_at, verified FROM users
+SELECT id, username, password, email, verified, created_at FROM users
 where id = $1
 `
 
@@ -79,8 +79,8 @@ func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
 		&i.Username,
 		&i.Password,
 		&i.Email,
-		&i.CreatedAt,
 		&i.Verified,
+		&i.CreatedAt,
 	)
 	return i, err
 }

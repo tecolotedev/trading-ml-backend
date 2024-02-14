@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/tecolotedev/stori_back/config"
-	"github.com/tecolotedev/stori_back/routes"
+	"github.com/tecolotedev/trading-ml-backend/config"
+	"github.com/tecolotedev/trading-ml-backend/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
