@@ -13,15 +13,15 @@ import (
 
 func main() {
 	config.SetUpConfig()
-	// db.InitDb()
 
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000, https://stori-front.tecolotedev.com",
+		AllowOrigins:     "http://localhost:3000",
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
 	}))
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"ok": true, "message": "api is working"})
 	})

@@ -3,6 +3,7 @@ CREATE TABLE "users" (
   "username" VARCHAR NOT NULL,
   "password" VARCHAR NOT NULL,
   "email" VARCHAR UNIQUE NOT NULL,
+  "verfied" BOOLEAN DEFAULT false
   "created_at" TIMESTAMP DEFAULT (now())
 );
 

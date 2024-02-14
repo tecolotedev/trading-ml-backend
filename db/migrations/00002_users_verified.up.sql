@@ -1,1 +1,0 @@
-ALTER TABLE "users" ADD verified boolean DEFAULT false;
