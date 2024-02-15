@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tecolotedev/trading-ml-backend/db"
@@ -15,67 +17,66 @@ type loginRequest struct {
 	Password string `json:"password"  form:"password"`
 }
 type loginResponse struct {
-	ID        int    `json:"id" form:"id"`
-	Email     string `json:"email" form:"email"`
-	Username  string `json:"username"  form:"username"`
-	CreatedAt string `json:"created_at"  form:"created_at"`
+	ID        int    `json:"id"`
+	Email     string `json:"email"`
+	Username  string `json:"username"`
+	Verified  bool   `json:"verified"`
+	CreatedAt string `json:"created_at"`
 }
 
-// func Login(c *fiber.Ctx) error {
-// 	loginBody := new(loginRequest)
+func Login(c *fiber.Ctx) error {
+	loginBody := new(loginRequest)
 
-// 	if err := c.BodyParser(loginBody); err != nil {
-// 		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
-// 	}
+	user := models.User{}
 
-// 	user, err := db.Queries.GetUser(context.Background(), loginBody.Email)
-// 	if err != nil {
-// 		return utils.SendError(c, "Wrong email or password", fiber.StatusBadRequest)
-// 	}
+	if err := c.BodyParser(loginBody); err != nil {
+		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
+	}
 
-// 	if !user.Verified.Bool {
-// 		return utils.SendError(c, "Please verify your account", fiber.StatusBadRequest)
-// 	}
+	if err := user.GetByEmail(loginBody.Email); err != nil {
+		return utils.SendError(c, err, fiber.StatusBadRequest)
+	}
 
-// 	err = utils.CheckPassword(loginBody.Password, user.Password)
-// 	if err != nil {
-// 		return utils.SendError(c, "Wrong email or password", fiber.StatusBadRequest)
-// 	}
+	if err := user.ValidateLogin(loginBody.Password); err != nil {
+		return utils.SendError(c, err, fiber.StatusBadRequest)
+	}
 
-// 	token, err := utils.CreateToken(user.ID, 24*time.Hour)
-// 	if err != nil {
-// 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
-// 	}
+	token, err := utils.CreateToken(user.ID, time.Hour*24)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return utils.SendError(c, fmt.Errorf("error login, please try it later"), fiber.StatusInternalServerError)
+	}
 
-// 	userResponse := loginResponse{
-// 		ID:        int(user.ID),
-// 		Email:     user.Email,
-// 		Username:  user.Username,
-// 		CreatedAt: user.CreatedAt.Time.String(),
-// 	}
+	userResponse := loginResponse{
+		ID:        int(user.ID),
+		Email:     user.Email,
+		Username:  user.Username,
+		Verified:  user.Verified.Bool,
+		CreatedAt: user.CreatedAt.Time.String(),
+	}
 
-// 	cookie := new(fiber.Cookie)
-// 	cookie.Name = "access_token"
-// 	cookie.Value = token
-// 	cookie.SameSite = "None"
-// 	cookie.Secure = false
-// 	cookie.Domain = ".tecolotedev.com"
-// 	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie := fiber.Cookie{
+		Name:     "access_token",
+		Value:    token,
+		SameSite: "None",
+		HTTPOnly: true,
+		Expires:  time.Now().Add(24 * time.Hour),
+	}
 
-// 	c.Cookie(cookie)
+	c.Cookie(&cookie)
 
-// 	return utils.SendResponse(c, userResponse)
+	return utils.SendResponse(c, userResponse)
 
-// }
+}
 
-// func VerifyToken(c *fiber.Ctx) error {
-// 	accessToken := c.Cookies("access_token")
-// 	payload, err := utils.VerifyToken(accessToken)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return utils.SendResponse(c, payload)
-// }
+func VerifyToken(c *fiber.Ctx) error {
+	accessToken := c.Cookies("access_token")
+	payload, err := utils.VerifyToken(accessToken)
+	if err != nil {
+		return err
+	}
+	return utils.SendResponse(c, payload)
+}
 
 type signupRequest struct {
 	Username string `json:"username" form:"username"`

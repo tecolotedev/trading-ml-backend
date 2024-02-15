@@ -66,3 +66,31 @@ func (u *User) GetByID(id int32) error {
 
 	return nil
 }
+
+func (u *User) GetByEmail(email string) error {
+	user := User{}
+
+	dbUser, err := db.Queries.GetUser(context.Background(), email)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return fmt.Errorf("wrong credentials") //wrong email
+	}
+
+	// copy matching field from dbUser to user type
+	copier.Copy(&user, &dbUser)
+
+	*u = user
+	return nil
+}
+
+func (u *User) ValidateLogin(password string) error {
+	if !u.Verified.Bool {
+		return fmt.Errorf("user not verified")
+	}
+
+	if err := utils.CheckPassword(password, u.Password); err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return fmt.Errorf("wrong credentials") // wrong password
+	}
+	return nil
+}

@@ -85,6 +85,8 @@ func listenForShutdown(wg *sync.WaitGroup) {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
+	utils.Log.InfoLog("Quit signal triggered, shutdown system", pack)
+
 	shutdown(wg)
 	os.Exit(0)
 }
@@ -92,6 +94,7 @@ func listenForShutdown(wg *sync.WaitGroup) {
 func shutdown(wg *sync.WaitGroup) {
 	// block until all go-routines have finished
 	wg.Wait()
+	utils.Log.InfoLog("Global WG reached 0 elements", pack)
 
 	// break loop of chans
 	email.Mailer.MailDoneChan <- true
@@ -100,4 +103,5 @@ func shutdown(wg *sync.WaitGroup) {
 	close(email.Mailer.MailChan)
 	close(email.Mailer.MailDoneChan)
 
+	utils.Log.InfoLog("All chanels closed", pack)
 }
