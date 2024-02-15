@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jinzhu/copier"
+
 	"github.com/tecolotedev/trading-ml-backend/db"
 	sqlc "github.com/tecolotedev/trading-ml-backend/sqlc/code"
 	"github.com/tecolotedev/trading-ml-backend/utils"
@@ -19,14 +21,15 @@ func (u *User) CreateUser() (sqlc.CreateUserRow, error) {
 
 	newUser := sqlc.CreateUserRow{}
 
-	err := u.hashPassword()
-
-	// validate email
-
+	// hash password
+	hashedPassword, err := utils.HashPassword(u.Password)
+	u.Password = hashedPassword
 	if err != nil {
 		utils.Log.ErrorLog(err, pack)
-		return newUser, fmt.Errorf("Error creating user please try it later")
+		return newUser, fmt.Errorf("error creating user please try it later")
 	}
+
+	// TODO:  validate email
 
 	params := sqlc.CreateUserParams{
 		Username: u.Username,
@@ -38,21 +41,28 @@ func (u *User) CreateUser() (sqlc.CreateUserRow, error) {
 
 	if err != nil {
 		utils.Log.ErrorLog(err, pack)
-		return newUser, err
+		return newUser, fmt.Errorf("error creating user please try it later")
 	}
 
 	return newUser, nil
 
 }
 
-func (u *User) hashPassword() error {
+func (u *User) GetByID(id int32) error {
 
-	hashedPassword, err := utils.HashPassword(u.Password)
+	user := User{}
+
+	dbUser, err := db.Queries.GetUserById(context.Background(), id)
 	if err != nil {
-		return err
+		utils.Log.ErrorLog(err, pack)
+		return fmt.Errorf("error getting user")
 	}
 
-	u.Password = hashedPassword
+	// copy matching field from dbUser to user type
+	copier.Copy(&user, &dbUser)
+
+	// update user
+	*u = user
 
 	return nil
 }

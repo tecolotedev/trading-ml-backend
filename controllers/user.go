@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/tecolotedev/trading-ml-backend/db"
 	"github.com/tecolotedev/trading-ml-backend/email"
 	"github.com/tecolotedev/trading-ml-backend/models"
 	"github.com/tecolotedev/trading-ml-backend/utils"
@@ -100,7 +103,7 @@ func Signup(c *fiber.Ctx) error {
 		return utils.SendError(c, err, fiber.StatusBadRequest)
 	}
 
-	// //Sending email concurrently
+	// Sending email concurrently
 	mail := email.Mail{
 		Template: email.SignupTemplate,
 		Data: map[string]any{
@@ -109,23 +112,57 @@ func Signup(c *fiber.Ctx) error {
 		},
 		To: newUser.Email,
 	}
-	// go email.Mailer.SendEmailChan(mail)
 	email.Mailer.MailChan <- mail
 
 	return utils.SendResponse(c, newUser)
 }
 
-// func VerifyAccount(c *fiber.Ctx) error {
-// 	id, err := strconv.Atoi(c.Query("id", ""))
+func VerifyAccount(c *fiber.Ctx) error {
+	// get id of user from url
+	id, err := strconv.Atoi(c.Query("id", ""))
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return utils.SendError(c, err, fiber.StatusBadRequest)
+	}
 
-// 	if err != nil {
-// 		return utils.SendError(c, "Wrong id", fiber.StatusBadRequest)
-// 	}
-// 	_, err = db.Queries.VerifyUser(c.Context(), int32(id))
+	// get token of user from url
+	token := c.Query("token", "")
 
-// 	if err != nil {
-// 		return err
-// 	}
+	//verify token
+	_, err = utils.VerifyToken(token)
 
-// 	return utils.SendResponse(c, struct{}{})
-// }
+	if err != nil {
+		// Resend email if token if something is wrong with the token
+		user := models.User{}
+		err = user.GetByID(int32(id))
+
+		if err != nil {
+			return utils.SendError(c, err, fiber.StatusBadRequest)
+		}
+
+		// Re-sending email concurrently
+		mail := email.Mail{
+			Template: email.SignupTemplate,
+			Data: map[string]any{
+				"name": user.Username,
+				"id":   user.ID,
+			},
+			To: user.Email,
+		}
+		email.Mailer.MailChan <- mail
+
+		return utils.SendResponse(c, fiber.Map{"Message": "Token expired, resending email"})
+
+	} else {
+		// verify user if token is ok
+		_, err = db.Queries.VerifyUser(c.Context(), int32(id))
+
+		if err != nil {
+			utils.Log.ErrorLog(err, pack)
+			return utils.SendError(c, err, fiber.StatusBadRequest)
+		}
+
+		return utils.SendResponse(c, struct{}{})
+	}
+
+}
