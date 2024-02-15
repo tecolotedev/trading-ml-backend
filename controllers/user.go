@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/tecolotedev/trading-ml-backend/email"
 	"github.com/tecolotedev/trading-ml-backend/models"
 	"github.com/tecolotedev/trading-ml-backend/utils"
 )
@@ -99,8 +100,17 @@ func Signup(c *fiber.Ctx) error {
 		return utils.SendError(c, err, fiber.StatusBadRequest)
 	}
 
-	//Sending email concurrently
-	// email.SendSignupEmail(userCreated.Username, userCreated.ID, userCreated.Email)
+	// //Sending email concurrently
+	mail := email.Mail{
+		Template: email.SignupTemplate,
+		Data: map[string]any{
+			"name": newUser.Username,
+			"id":   newUser.ID,
+		},
+		To: newUser.Email,
+	}
+	// go email.Mailer.SendEmailChan(mail)
+	email.Mailer.MailChan <- mail
 
 	return utils.SendResponse(c, newUser)
 }

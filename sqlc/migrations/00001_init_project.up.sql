@@ -1,6 +1,6 @@
 CREATE TABLE "users" (
   "id" SERIAL PRIMARY KEY,
-  "username" VARCHAR NOT NULL,
+  "username" VARCHAR UNIQUE NOT NULL,
   "password" VARCHAR NOT NULL,
   "email" VARCHAR UNIQUE NOT NULL,
   "verified" BOOLEAN DEFAULT False,

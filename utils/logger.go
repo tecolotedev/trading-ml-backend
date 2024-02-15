@@ -18,11 +18,11 @@ func (l *Logger) WarningLog(message, pack string) {
 }
 
 func (l *Logger) ErrorLog(err error, pack string) {
-	color.Red("ERROR %s | package=%s: %v \n", time.Now().String(), err)
+	color.Red("ERROR %s | package=%s: %v \n", time.Now().String(), pack, err)
 }
 
 func (l *Logger) FatalLog(err error, pack string) {
-	color.Red("FATAL %s | package=%s: %v \n", time.Now().String(), err)
+	color.Red("FATAL %s | package=%s: %v \n", time.Now().String(), pack, err)
 	os.Exit(1)
 }
 
