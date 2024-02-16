@@ -22,6 +22,8 @@ type EnvVarsType struct {
 	EMAIL_PASSWORD string
 
 	FRONT_URL string
+
+	TWELVE_DATA_KEY string
 }
 
 var EnvVars EnvVarsType
@@ -69,4 +71,9 @@ func SetUpConfig() {
 	//front url
 	frontUrl := os.Getenv("FRONT_URL")
 	EnvVars.FRONT_URL = frontUrl
+
+	// Twelve data
+	twelveDataKey := os.Getenv("TWELVE_DATA_KEY")
+	EnvVars.TWELVE_DATA_KEY = twelveDataKey
+
 }
