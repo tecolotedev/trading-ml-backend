@@ -1,1 +1,1 @@
-DELETE plans;
+DELETE FROM plans;

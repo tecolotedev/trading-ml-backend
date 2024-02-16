@@ -70,7 +70,7 @@ func (u *User) GetByID(id int32) error {
 func (u *User) GetByEmail(email string) error {
 	user := User{}
 
-	dbUser, err := db.Queries.GetUser(context.Background(), email)
+	dbUser, err := db.Queries.GetUserByEmail(context.Background(), email)
 	if err != nil {
 		utils.Log.ErrorLog(err, pack)
 		return fmt.Errorf("wrong credentials") //wrong email

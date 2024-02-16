@@ -8,5 +8,5 @@ CREATE TABLE "users" (
   "verified" BOOLEAN DEFAULT false,
   "created_at" TIMESTAMP DEFAULT (now()),
   "last_updated" TIMESTAMP DEFAULT (now()),
-  "plan_id" INTEGER
+  "plan_id" INTEGER DEFAULT 1
 );

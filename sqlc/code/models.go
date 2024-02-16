@@ -8,11 +8,26 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Plan struct {
+	ID                     int32
+	Name                   pgtype.Text
+	MaxHistoricalBars      pgtype.Int4
+	MaxSymbols             pgtype.Int4
+	MaxIndicatorsPerSymbol pgtype.Int4
+	MaxModels              pgtype.Int4
+	CreatedAt              pgtype.Timestamp
+	LastUpdated            pgtype.Timestamp
+}
+
 type User struct {
-	ID        int32
-	Username  string
-	Password  string
-	Email     string
-	Verified  pgtype.Bool
-	CreatedAt pgtype.Timestamp
+	ID          int32
+	Name        string
+	LastName    string
+	Username    string
+	Password    string
+	Email       string
+	Verified    pgtype.Bool
+	CreatedAt   pgtype.Timestamp
+	LastUpdated pgtype.Timestamp
+	PlanID      pgtype.Int4
 }
