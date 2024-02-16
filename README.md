@@ -11,7 +11,7 @@ $ docker exec -it postgres15 createdb --username=admin --owner=admin app_db
 ## Drop database if needed
 
 ```bash
-$ docker exec -it postgres15 dropdb --username=admin stori_db
+$ docker exec -it postgres15 dropdb --username=admin app_db
 ```
 
 ## Install golang-migrate
@@ -42,7 +42,7 @@ $ apt-get install -y migrate
 ## Migrate tables with golang-migrate
 
 ```bash
-$ migrate -path db/migrations -database "postgresql://admin:secret@127.0.0.1:5432/stori_db?sslmode=disable" --verbose up
+$ migrate -path db/migrations -database "postgresql://admin:secret@127.0.0.1:5432/app_db?sslmode=disable" --verbose up
 ```
 
 ## Install sqlc
@@ -60,7 +60,7 @@ PORT=8000
 DB_HOST="localhost"
 DB_USER="admin"
 DB_PASSWORD="secret"
-DB_NAME="stori_db"
+DB_NAME="app_db"
 IS_LOCAL=true
 
 EMAIL_HOST=#mailtrap host
@@ -87,7 +87,3 @@ https://api.postman.com/collections/6961632-baa5b9fa-4e5e-4242-88a7-c209ae4f65d3
 ## Test files
 
 _test files are included in `transfers_file` directory_
-
-## Front
-
-you can use this project with the front end: https://github.com/tecolotedev/stori_front
