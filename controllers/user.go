@@ -12,20 +12,8 @@ import (
 	"github.com/tecolotedev/trading-ml-backend/utils"
 )
 
-type loginRequest struct {
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password"  form:"password"`
-}
-type loginResponse struct {
-	ID        int    `json:"id"`
-	Email     string `json:"email"`
-	Username  string `json:"username"`
-	Verified  bool   `json:"verified"`
-	CreatedAt string `json:"created_at"`
-}
-
 func Login(c *fiber.Ctx) error {
-	loginBody := new(loginRequest)
+	loginBody := models.LoginInput{}
 
 	user := models.User{}
 
@@ -33,12 +21,10 @@ func Login(c *fiber.Ctx) error {
 		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
 	}
 
-	if err := user.GetByEmail(loginBody.Email); err != nil {
+	output, err := user.Login(loginBody)
+	if err != nil {
 		return utils.SendError(c, err, fiber.StatusBadRequest)
-	}
 
-	if err := user.ValidateLogin(loginBody.Password); err != nil {
-		return utils.SendError(c, err, fiber.StatusBadRequest)
 	}
 
 	token, err := utils.CreateToken(user.ID, time.Hour*24)
@@ -46,15 +32,6 @@ func Login(c *fiber.Ctx) error {
 		utils.Log.ErrorLog(err, pack)
 		return utils.SendError(c, fmt.Errorf("error login, please try it later"), fiber.StatusInternalServerError)
 	}
-
-	userResponse := loginResponse{
-		ID:        int(user.ID),
-		Email:     user.Email,
-		Username:  user.Username,
-		Verified:  user.Verified.Bool,
-		CreatedAt: user.CreatedAt.Time.String(),
-	}
-
 	cookie := fiber.Cookie{
 		Name:     "access_token",
 		Value:    token,
@@ -65,41 +42,23 @@ func Login(c *fiber.Ctx) error {
 
 	c.Cookie(&cookie)
 
-	return utils.SendResponse(c, userResponse)
+	return utils.SendResponse(c, output)
 
-}
-
-func VerifyToken(c *fiber.Ctx) error {
-	accessToken := c.Cookies("access_token")
-	payload, err := utils.VerifyToken(accessToken)
-	if err != nil {
-		return err
-	}
-	return utils.SendResponse(c, payload)
-}
-
-type signupRequest struct {
-	Username string `json:"username" form:"username"`
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password"  form:"password"`
 }
 
 func Signup(c *fiber.Ctx) error {
 	// Parsing request from client
-	signupBody := new(signupRequest)
+	signupBody := models.CreateUserInput{}
 	if err := c.BodyParser(signupBody); err != nil {
 		utils.Log.ErrorLog(err, pack)
-		return utils.SendError(c, err, fiber.StatusBadRequest)
+		return utils.SendError(c, fmt.Errorf("wrong body request"), fiber.StatusBadRequest)
 	}
 
 	// Init new User
 	user := models.User{}
-	user.Username = signupBody.Username
-	user.Password = signupBody.Password
-	user.Email = signupBody.Email
 
 	// Calling query to create user
-	newUser, err := user.CreateUser()
+	newUser, err := user.CreateUser(signupBody)
 	if err != nil {
 		return utils.SendError(c, err, fiber.StatusBadRequest)
 	}
@@ -166,4 +125,21 @@ func VerifyAccount(c *fiber.Ctx) error {
 		return utils.SendResponse(c, struct{}{})
 	}
 
+}
+
+func UpdateUser(c *fiber.Ctx) error {
+	updateUserBody := models.InputUpdateUser{}
+
+	if err := c.BodyParser(updateUserBody); err != nil {
+		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
+	}
+
+	user := models.User{}
+
+	err := user.UpdateUser(updateUserBody)
+
+	if err != nil {
+		return utils.SendError(c, err, fiber.StatusBadRequest)
+	}
+	return utils.SendResponse(c, struct{}{})
 }

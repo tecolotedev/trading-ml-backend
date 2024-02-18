@@ -21,7 +21,7 @@ INSERT INTO users (
 )
 VALUES (
     $1, $2, $3, $4, $5
-) RETURNING id, name, last_name, username,email,verified
+) RETURNING id, name, last_name, username, password, email, verified, created_at, last_updated, plan_id
 `
 
 type CreateUserParams struct {
@@ -32,16 +32,7 @@ type CreateUserParams struct {
 	Email    string
 }
 
-type CreateUserRow struct {
-	ID       int32
-	Name     string
-	LastName string
-	Username string
-	Email    string
-	Verified pgtype.Bool
-}
-
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Name,
 		arg.LastName,
@@ -49,14 +40,18 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 		arg.Password,
 		arg.Email,
 	)
-	var i CreateUserRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.LastName,
 		&i.Username,
+		&i.Password,
 		&i.Email,
 		&i.Verified,
+		&i.CreatedAt,
+		&i.LastUpdated,
+		&i.PlanID,
 	)
 	return i, err
 }
