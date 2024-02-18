@@ -46,8 +46,7 @@ func (u *User) CreateUser(input CreateUserInput) (output SafeUser, err error) {
 	// TODO:  validate email
 
 	// hash password
-	hashedPassword, err := utils.HashPassword(u.Password)
-	u.Password = hashedPassword
+	hashedPassword, err := utils.HashPassword(input.Password)
 	if err != nil {
 		utils.Log.ErrorLog(err, pack)
 		return output, fmt.Errorf("error creating user please try it later")
@@ -55,7 +54,7 @@ func (u *User) CreateUser(input CreateUserInput) (output SafeUser, err error) {
 
 	params := sqlc.CreateUserParams{
 		Username: input.Username,
-		Password: input.Password,
+		Password: hashedPassword,
 		Email:    input.Email,
 		Name:     input.Name,
 		LastName: input.LastName,
