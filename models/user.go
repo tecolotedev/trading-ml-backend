@@ -33,12 +33,18 @@ type CreateUserInput struct {
 	Username string `json:"username" form:"username"`
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password"  form:"password"`
-}
-type CreateUserOutput struct {
-	SafeUser
+	Name     string `json:"name"  form:"name"`
+	LastName string `json:"last_name"  form:"last_name"`
 }
 
-func (u *User) CreateUser(input CreateUserInput) (output CreateUserOutput, err error) {
+func (u *User) CreateUser(input CreateUserInput) (output SafeUser, err error) {
+
+	if input.Name == "" || input.LastName == "" || input.Username == "" || input.Email == "" || input.Password == "" {
+		return output, fmt.Errorf("username, email, password, name and last_name can't be null")
+	}
+
+	// TODO:  validate email
+
 	// hash password
 	hashedPassword, err := utils.HashPassword(u.Password)
 	u.Password = hashedPassword
@@ -47,12 +53,12 @@ func (u *User) CreateUser(input CreateUserInput) (output CreateUserOutput, err e
 		return output, fmt.Errorf("error creating user please try it later")
 	}
 
-	// TODO:  validate email
-
 	params := sqlc.CreateUserParams{
 		Username: input.Username,
 		Password: input.Password,
 		Email:    input.Email,
+		Name:     input.Name,
+		LastName: input.LastName,
 	}
 
 	dbUser, err := db.Queries.CreateUser(context.Background(), params)
@@ -62,7 +68,7 @@ func (u *User) CreateUser(input CreateUserInput) (output CreateUserOutput, err e
 		return output, fmt.Errorf("error creating user please try it later")
 	}
 
-	copier.Copy(output, dbUser)
+	copier.Copy(&output, &dbUser)
 
 	return output, nil
 
@@ -72,11 +78,8 @@ type LoginInput struct {
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password"  form:"password"`
 }
-type LoginOutput struct {
-	SafeUser
-}
 
-func (u *User) Login(input LoginInput) (output LoginOutput, err error) {
+func (u *User) Login(input LoginInput) (output SafeUser, err error) {
 
 	if err = u.GetByEmail(input.Email); err != nil {
 		return output, err
@@ -85,6 +88,9 @@ func (u *User) Login(input LoginInput) (output LoginOutput, err error) {
 	if err = u.ValidateLogin(input.Password); err != nil {
 		return output, err
 	}
+
+	copier.Copy(&output, u)
+
 	return
 
 }
@@ -136,7 +142,7 @@ func (u *User) ValidateLogin(password string) error {
 	return nil
 }
 
-type InputUpdateUser struct {
+type UpdateUserInput struct {
 	Name     string `json:"name" form:"name"`
 	LastName string `json:"last_name" form:"last_name"`
 	Username string `json:"username" form:"username"`
@@ -145,11 +151,8 @@ type InputUpdateUser struct {
 	PlanID   int    `json:"plan_id" form:"plan_id"`
 	ID       uint16 `json:"id" form:"id"`
 }
-type OutputUpdateUser struct {
-	SafeUser
-}
 
-func (u *User) UpdateUser(input InputUpdateUser) (err error) {
+func (u *User) UpdateUser(input UpdateUserInput) (err error) {
 
 	err = u.GetByID(int32(input.ID))
 	if err != nil {
@@ -193,4 +196,19 @@ func (u *User) UpdateUser(input InputUpdateUser) (err error) {
 
 	return
 
+}
+
+type DeleteUserInput struct {
+	ID int32 `json:"id" form:"id"`
+}
+
+func (u *User) DeleteUser(input DeleteUserInput) (err error) {
+
+	err = db.Queries.DeleteUser(context.Background(), input.ID)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return fmt.Errorf("error deleting user")
+	}
+
+	return nil
 }

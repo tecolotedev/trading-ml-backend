@@ -48,7 +48,7 @@ func Login(c *fiber.Ctx) error {
 
 func Signup(c *fiber.Ctx) error {
 	// Parsing request from client
-	signupBody := models.CreateUserInput{}
+	signupBody := new(models.CreateUserInput)
 	if err := c.BodyParser(signupBody); err != nil {
 		utils.Log.ErrorLog(err, pack)
 		return utils.SendError(c, fmt.Errorf("wrong body request"), fiber.StatusBadRequest)
@@ -58,7 +58,7 @@ func Signup(c *fiber.Ctx) error {
 	user := models.User{}
 
 	// Calling query to create user
-	newUser, err := user.CreateUser(signupBody)
+	newUser, err := user.CreateUser(*signupBody)
 	if err != nil {
 		return utils.SendError(c, err, fiber.StatusBadRequest)
 	}
@@ -128,7 +128,7 @@ func VerifyAccount(c *fiber.Ctx) error {
 }
 
 func UpdateUser(c *fiber.Ctx) error {
-	updateUserBody := models.InputUpdateUser{}
+	updateUserBody := models.UpdateUserInput{}
 
 	if err := c.BodyParser(updateUserBody); err != nil {
 		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
@@ -139,7 +139,25 @@ func UpdateUser(c *fiber.Ctx) error {
 	err := user.UpdateUser(updateUserBody)
 
 	if err != nil {
-		return utils.SendError(c, err, fiber.StatusBadRequest)
+		return utils.SendError(c, err, fiber.StatusInternalServerError)
 	}
+	return utils.SendResponse(c, struct{}{})
+}
+
+func DeleteUser(c *fiber.Ctx) error {
+
+	deleteUserBody := models.DeleteUserInput{}
+
+	if err := c.BodyParser(deleteUserBody); err != nil {
+		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
+	}
+
+	user := models.User{}
+
+	err := user.DeleteUser(deleteUserBody)
+	if err != nil {
+		return utils.SendError(c, err, fiber.StatusInternalServerError)
+	}
+
 	return utils.SendResponse(c, struct{}{})
 }

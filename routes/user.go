@@ -9,6 +9,6 @@ func SetUpUserRoutes(router fiber.Router) {
 	router.Post("/login", controllers.Login)
 	router.Post("/signup", controllers.Signup)
 	router.Get("/verify-account", controllers.VerifyAccount)
-	router.Put("/user")
-	// router.Get("/verifyToken", controllers.VerifyToken)
+	router.Put("/user", controllers.UpdateUser)
+	router.Delete("/user", controllers.DeleteUser)
 }
