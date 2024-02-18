@@ -148,12 +148,12 @@ type UpdateUserInput struct {
 	Password string `json:"password"  form:"password"`
 	Email    string `json:"email" form:"email"`
 	PlanID   int    `json:"plan_id" form:"plan_id"`
-	ID       uint16 `json:"id" form:"id"`
+	ID       int32
 }
 
 func (u *User) UpdateUser(input UpdateUserInput) (err error) {
 
-	err = u.GetByID(int32(input.ID))
+	err = u.GetByID(input.ID)
 	if err != nil {
 		return fmt.Errorf("error getting user")
 	}
@@ -198,7 +198,7 @@ func (u *User) UpdateUser(input UpdateUserInput) (err error) {
 }
 
 type DeleteUserInput struct {
-	ID int32 `json:"id" form:"id"`
+	ID int32
 }
 
 func (u *User) DeleteUser(input DeleteUserInput) (err error) {

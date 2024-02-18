@@ -138,6 +138,8 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	user := models.User{}
 
+	updateUserBody.ID = c.Locals("userID").(int32)
+
 	err := user.UpdateUser(*updateUserBody)
 
 	if err != nil {
@@ -155,6 +157,8 @@ func DeleteUser(c *fiber.Ctx) error {
 	}
 
 	user := models.User{}
+
+	deleteUserBody.ID = c.Locals("userID").(int32)
 
 	err := user.DeleteUser(*deleteUserBody)
 	if err != nil {

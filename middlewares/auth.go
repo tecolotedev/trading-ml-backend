@@ -8,13 +8,18 @@ import (
 )
 
 func Auth(c *fiber.Ctx) error {
-	accessToken := c.Cookies("access_token")
-	payload, err := utils.VerifyToken(accessToken)
+	access_token := c.Cookies("access_token")
+	if access_token == "" {
+		return utils.SendError(c, fmt.Errorf("no token, please signin"), fiber.StatusForbidden)
+	}
+
+	payload, err := utils.VerifyToken(access_token)
 	if err != nil {
 		c.ClearCookie("access_token")
-		fmt.Println("err mid Auth: ", err)
-		return err
+		return utils.SendError(c, fmt.Errorf("invalid token, please signin"), fiber.StatusUnauthorized)
 	}
-	c.Locals("userId", payload.USERID)
+
+	c.Locals("userID", payload.USERID)
+
 	return c.Next()
 }
