@@ -164,7 +164,6 @@ func (u *User) UpdateUser(input UpdateUserInput) (err error) {
 		Username: u.Username,
 		Password: u.Password,
 		Email:    u.Email,
-		PlanID:   u.PlanID,
 		ID:       u.ID,
 	}
 
@@ -182,9 +181,6 @@ func (u *User) UpdateUser(input UpdateUserInput) (err error) {
 	}
 	if input.Email != "" {
 		params.Email = input.Email
-	}
-	if input.PlanID != 0 {
-		params.PlanID = pgtype.Int4{Int32: int32(input.ID), Valid: true}
 	}
 
 	err = db.Queries.UpdateUser(context.Background(), params)
@@ -219,4 +215,28 @@ func (u *User) GetUserPlanById(id int32) (output sqlc.GetUserPlanByIdRow, err er
 		return userPlan, fmt.Errorf("error getting user")
 	}
 	return userPlan, nil
+}
+
+type UpdateUserPlanInput struct {
+	PlanID int32 `json:"plan_id" form:"plan_id"`
+	ID     int32
+}
+
+func (u *User) UpdateUserPlan(input UpdateUserPlanInput) (err error) {
+
+	params := sqlc.UpdateUserPlanParams{
+		PlanID: pgtype.Int4{
+			Int32: input.PlanID,
+			Valid: true,
+		},
+		ID: input.ID,
+	}
+	err = db.Queries.UpdateUserPlan(context.Background(), params)
+
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return fmt.Errorf("error updating user plan")
+	}
+
+	return nil
 }

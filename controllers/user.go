@@ -167,3 +167,22 @@ func DeleteUser(c *fiber.Ctx) error {
 
 	return utils.SendResponse(c, struct{}{})
 }
+
+func UpdateUserPlan(c *fiber.Ctx) error {
+	updateUserPlanBody := new(models.UpdateUserPlanInput)
+
+	if err := c.BodyParser(updateUserPlanBody); err != nil {
+		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
+	}
+
+	updateUserPlanBody.ID = c.Locals("userID").(int32)
+
+	user := models.User{}
+	err := user.UpdateUserPlan(*updateUserPlanBody)
+	if err != nil {
+		return utils.SendError(c, err, fiber.StatusInternalServerError)
+	}
+
+	return utils.SendResponse(c, struct{}{})
+
+}

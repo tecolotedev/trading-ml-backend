@@ -15,4 +15,5 @@ func SetUpUserRoutes(router fiber.Router) {
 	router.Use(middlewares.Auth)
 	router.Put("/", controllers.UpdateUser)
 	router.Delete("/", controllers.DeleteUser)
+	router.Post("/update-plan", controllers.UpdateUserPlan)
 }

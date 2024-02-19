@@ -172,9 +172,8 @@ SET name = $1,
     username = $3,
     password =$4,
     email = $5,
-    plan_id = $6,
     last_updated = now()
-WHERE id = $7
+WHERE id = $6
 `
 
 type UpdateUserParams struct {
@@ -183,7 +182,6 @@ type UpdateUserParams struct {
 	Username string
 	Password string
 	Email    string
-	PlanID   pgtype.Int4
 	ID       int32
 }
 
@@ -194,9 +192,26 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 		arg.Username,
 		arg.Password,
 		arg.Email,
-		arg.PlanID,
 		arg.ID,
 	)
+	return err
+}
+
+const updateUserPlan = `-- name: UpdateUserPlan :exec
+UPDATE users
+SET 
+    plan_id = $1,
+    last_updated = now()
+WHERE id = $2
+`
+
+type UpdateUserPlanParams struct {
+	PlanID pgtype.Int4
+	ID     int32
+}
+
+func (q *Queries) UpdateUserPlan(ctx context.Context, arg UpdateUserPlanParams) error {
+	_, err := q.db.Exec(ctx, updateUserPlan, arg.PlanID, arg.ID)
 	return err
 }
 

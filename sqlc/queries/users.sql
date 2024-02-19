@@ -23,6 +23,14 @@ UPDATE users
 SET verified = true
 WHERE id = $1;
 
+
+-- name: UpdateUserPlan :exec
+UPDATE users
+SET 
+    plan_id = $1,
+    last_updated = now()
+WHERE id = $2;
+
 -- name: UpdateUser :exec
 UPDATE users
 SET name = $1,
@@ -30,9 +38,8 @@ SET name = $1,
     username = $3,
     password =$4,
     email = $5,
-    plan_id = $6,
     last_updated = now()
-WHERE id = $7;
+WHERE id = $6;
 
 -- name: DeleteUser :exec
 DELETE FROM users 
