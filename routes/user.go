@@ -13,6 +13,6 @@ func SetUpUserRoutes(router fiber.Router) {
 
 	// Protected routes
 	router.Use(middlewares.Auth)
-	router.Put("/user", controllers.UpdateUser)
-	router.Delete("/user", controllers.DeleteUser)
+	router.Put("/", controllers.UpdateUser)
+	router.Delete("/", controllers.DeleteUser)
 }
