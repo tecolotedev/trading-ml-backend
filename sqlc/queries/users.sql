@@ -37,3 +37,9 @@ WHERE id = $7;
 -- name: DeleteUser :exec
 DELETE FROM users 
 WHERE id = $1;
+
+
+-- name: GetUserPlanById :one
+SELECT * FROM users
+INNER JOIN plans ON users.plan_id = plans.id
+WHERE users.id = $1;

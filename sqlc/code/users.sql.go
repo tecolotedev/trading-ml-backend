@@ -112,6 +112,59 @@ func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
 	return i, err
 }
 
+const getUserPlanById = `-- name: GetUserPlanById :one
+SELECT users.id, users.name, last_name, username, password, email, verified, users.created_at, users.last_updated, plan_id, plans.id, plans.name, max_historical_bars, max_symbols, max_indicators_per_symbol, max_models, plans.created_at, plans.last_updated FROM users
+INNER JOIN plans ON users.plan_id = plans.id
+WHERE users.id = $1
+`
+
+type GetUserPlanByIdRow struct {
+	ID                     int32
+	Name                   string
+	LastName               string
+	Username               string
+	Password               string
+	Email                  string
+	Verified               pgtype.Bool
+	CreatedAt              pgtype.Timestamp
+	LastUpdated            pgtype.Timestamp
+	PlanID                 pgtype.Int4
+	ID_2                   int32
+	Name_2                 pgtype.Text
+	MaxHistoricalBars      pgtype.Int4
+	MaxSymbols             pgtype.Int4
+	MaxIndicatorsPerSymbol pgtype.Int4
+	MaxModels              pgtype.Int4
+	CreatedAt_2            pgtype.Timestamp
+	LastUpdated_2          pgtype.Timestamp
+}
+
+func (q *Queries) GetUserPlanById(ctx context.Context, id int32) (GetUserPlanByIdRow, error) {
+	row := q.db.QueryRow(ctx, getUserPlanById, id)
+	var i GetUserPlanByIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.LastName,
+		&i.Username,
+		&i.Password,
+		&i.Email,
+		&i.Verified,
+		&i.CreatedAt,
+		&i.LastUpdated,
+		&i.PlanID,
+		&i.ID_2,
+		&i.Name_2,
+		&i.MaxHistoricalBars,
+		&i.MaxSymbols,
+		&i.MaxIndicatorsPerSymbol,
+		&i.MaxModels,
+		&i.CreatedAt_2,
+		&i.LastUpdated_2,
+	)
+	return i, err
+}
+
 const updateUser = `-- name: UpdateUser :exec
 UPDATE users
 SET name = $1,

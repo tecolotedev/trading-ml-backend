@@ -211,3 +211,12 @@ func (u *User) DeleteUser(input DeleteUserInput) (err error) {
 
 	return nil
 }
+
+func (u *User) GetUserPlanById(id int32) (output sqlc.GetUserPlanByIdRow, err error) {
+	userPlan, err := db.Queries.GetUserPlanById(context.Background(), id)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return userPlan, fmt.Errorf("error getting user")
+	}
+	return userPlan, nil
+}
