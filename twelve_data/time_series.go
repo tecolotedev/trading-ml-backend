@@ -42,7 +42,6 @@ func FetchTimeSeries(outputSize int, symbol, interval, tz, startDate, endDate st
 	}
 
 	body, err := io.ReadAll(res.Body)
-	fmt.Println(string(body))
 	if err != nil {
 		utils.Log.ErrorLog(err, pack)
 		err = fmt.Errorf("error fetching financial data, please try it later")

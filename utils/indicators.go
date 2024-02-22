@@ -6,7 +6,7 @@ import (
 )
 
 func ValidateTimePeriod(tp int) (err error) {
-	if tp > 1 && tp < 800 {
+	if tp >= 1 && tp <= 800 {
 		return
 	}
 
