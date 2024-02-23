@@ -10,12 +10,6 @@ import (
 	"github.com/tecolotedev/trading-ml-backend/utils"
 )
 
-// func FetchIndicator(outputsize int, symbol, interval, tz ,string) {
-
-// }
-
-const MA = "ma"
-
 type MAResponse struct {
 	Values []utils.MAValueResponse
 }
@@ -63,6 +57,59 @@ func FetchMA(outputSize, timePeriod int, symbol, interval, tz, startDate, endDat
 
 	// parse values from string to float
 	values = utils.ParseMAValues(maResponse.Values)
+
+	return
+
+}
+
+type MACDResponse struct {
+	Values []utils.MACDValueResponse
+}
+
+func FetchMACD(outputSize, fastPeriod, signalPeriod, slowPeriod int, symbol, interval, tz, startDate, endDate, seriesType string) (values []utils.MACDValueParsed, err error) {
+	var key = config.EnvVars.TWELVE_DATA_KEY
+
+	url := fmt.Sprintf(
+		"%smacd?symbol=%s&interval=%s&outputsize=%d&timezone=%s&start_date=%s&end_date=%s&series_type=%s&fast_period=%d&signal_period=%d&slow_period=%d&apikey=%s",
+		twelveDataUrl,
+		utils.Symbols[symbol],
+		utils.Intervals[interval],
+		outputSize,
+		tz,
+		startDate,
+		endDate,
+		seriesType,
+		fastPeriod,
+		signalPeriod,
+		slowPeriod,
+		key,
+	)
+
+	res, err := http.Get(url)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	var macdResponse = MACDResponse{}
+	err = json.Unmarshal(body, &macdResponse)
+
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	// parse values from string to float
+	values = utils.ParseMACDValues(macdResponse.Values)
 
 	return
 

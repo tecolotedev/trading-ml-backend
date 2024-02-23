@@ -5,12 +5,15 @@ import (
 	"strconv"
 )
 
-func ValidateTimePeriod(tp int) (err error) {
+/*
+ * Utils for Moving Average indicator
+ */
+func ValidatePeriod(tp int, namePeriod string) (err error) {
 	if tp >= 1 && tp <= 800 {
 		return
 	}
 
-	return fmt.Errorf("time_period must be between 1 and 800 including")
+	return fmt.Errorf("%s must be between 1 and 800 including", namePeriod)
 }
 
 var maTypes = map[string]string{
@@ -53,7 +56,7 @@ func ValidateSeriesType(seriesType string) (err error) {
 }
 
 func ValidateMAParams(timePeriod int, maType, seriesType string) (err error) {
-	err = ValidateTimePeriod(timePeriod)
+	err = ValidatePeriod(timePeriod, "time_period")
 	if err != nil {
 		return
 	}
@@ -85,5 +88,58 @@ func ParseMAValues(inputValues []MAValueResponse) (values []MAValueParsed) {
 
 		values = append(values, value)
 	}
+	return
+}
+
+/*
+ * Utils for Moving Average Convergence Divergence (MACD) indicator
+ */
+
+type MACDValueResponse struct {
+	Datetime    string
+	MACD        string
+	MACD_SIGNAL string
+	MACD_HIST   string
+}
+type MACDValueParsed struct {
+	Datetime    string
+	MACD        float64
+	MACD_SIGNAL float64
+	MACD_HIST   float64
+}
+
+func ParseMACDValues(inputValues []MACDValueResponse) (values []MACDValueParsed) {
+	for _, v := range inputValues {
+		value := MACDValueParsed{
+			Datetime: v.Datetime,
+		}
+
+		macd, _ := strconv.ParseFloat(v.MACD, 64)
+		macd_signal, _ := strconv.ParseFloat(v.MACD_SIGNAL, 64)
+		macd_hist, _ := strconv.ParseFloat(v.MACD_HIST, 64)
+
+		value.MACD = macd
+		value.MACD_SIGNAL = macd_signal
+		value.MACD_HIST = macd_hist
+
+		values = append(values, value)
+	}
+	return
+}
+
+func ValidateMACDParams(fastPeriod, signalPeriod, slowPeriod int, seriesType string) (err error) {
+	err = ValidatePeriod(fastPeriod, "fast_period")
+	if err != nil {
+		return
+	}
+	err = ValidatePeriod(signalPeriod, "signal_period")
+	if err != nil {
+		return
+	}
+	err = ValidatePeriod(slowPeriod, "slow_period")
+	if err != nil {
+		return
+	}
+	err = ValidateSeriesType(seriesType)
 	return
 }
