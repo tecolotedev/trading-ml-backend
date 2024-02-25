@@ -70,11 +70,11 @@ func ValidateMAParams(timePeriod int, maType, seriesType string) (err error) {
 
 type MAValueResponse struct {
 	Datetime string
-	MA       string
+	Ma       string
 }
 type MAValueParsed struct {
 	Datetime string
-	MA       float64
+	Ma       float64
 }
 
 func ParseMAValues(inputValues []MAValueResponse) (values []MAValueParsed) {
@@ -83,8 +83,8 @@ func ParseMAValues(inputValues []MAValueResponse) (values []MAValueParsed) {
 			Datetime: v.Datetime,
 		}
 
-		ma, _ := strconv.ParseFloat(v.MA, 64)
-		value.MA = ma
+		ma, _ := strconv.ParseFloat(v.Ma, 64)
+		value.Ma = ma
 
 		values = append(values, value)
 	}
@@ -173,5 +173,54 @@ func ParseRSIValues(inputValues []RSIValueResponse) (values []RSIValueParsed) {
 
 func ValidateRSIParams(timePeriod int) (err error) {
 	err = ValidatePeriod(timePeriod, "time_period")
+	return
+}
+
+/*
+ * Utils for Bollinger Bands (BBANDS) indicator
+ */
+
+type BBANDSValueResponse struct {
+	Datetime    string
+	UPPER_BAND  string
+	MIDDLE_BAND string
+	LOWER_BAND  string
+}
+type BBANDSValueParsed struct {
+	Datetime    string
+	UPPER_BAND  float64
+	MIDDLE_BAND float64
+	LOWER_BAND  float64
+}
+
+func ParseBBANDSValues(inputValues []BBANDSValueResponse) (values []BBANDSValueParsed) {
+	for _, v := range inputValues {
+		value := BBANDSValueParsed{
+			Datetime: v.Datetime,
+		}
+
+		uBand, _ := strconv.ParseFloat(v.UPPER_BAND, 64)
+		mBand, _ := strconv.ParseFloat(v.MIDDLE_BAND, 64)
+		lBand, _ := strconv.ParseFloat(v.LOWER_BAND, 64)
+
+		value.UPPER_BAND = uBand
+		value.MIDDLE_BAND = mBand
+		value.LOWER_BAND = lBand
+
+		values = append(values, value)
+	}
+	return
+}
+
+func ValidateBBANDSParams(timePeriod int, maType, seriesType string) (err error) {
+	err = ValidatePeriod(timePeriod, "time_period")
+	if err != nil {
+		return
+	}
+	err = ValidateMAType(maType)
+	if err != nil {
+		return
+	}
+	err = ValidateSeriesType(seriesType)
 	return
 }

@@ -164,3 +164,56 @@ func FetchRSI(outputSize, timePeriod int, symbol, interval, tz, startDate, endDa
 	return
 
 }
+
+type BBANDSResponse struct {
+	Values []utils.BBANDSValueResponse
+}
+
+func FetchBBANDS(outputSize, sd, timePeriod int, symbol, interval, tz, startDate, endDate, maType, seriesType string) (values []utils.BBANDSValueParsed, err error) {
+	var key = config.EnvVars.TWELVE_DATA_KEY
+
+	url := fmt.Sprintf(
+		"%sbbands?symbol=%s&interval=%s&outputsize=%d&timezone=%s&start_date=%s&end_date=%s&sd=%d&time_period=%d&ma_type=%s&series_type=%s&apikey=%s",
+		twelveDataUrl,
+		utils.Symbols[symbol],
+		utils.Intervals[interval],
+		outputSize,
+		tz,
+		startDate,
+		endDate,
+		sd,
+		timePeriod,
+		maType,
+		seriesType,
+		key,
+	)
+
+	res, err := http.Get(url)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	var macdResponse = BBANDSResponse{}
+	err = json.Unmarshal(body, &macdResponse)
+
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	// parse values from string to float
+	values = utils.ParseBBANDSValues(macdResponse.Values)
+
+	return
+
+}

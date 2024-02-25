@@ -12,5 +12,5 @@ func SetUpFinancialRoutes(router fiber.Router) {
 	router.Get("/indicator/ma", controllers.GetMAData)
 	router.Get("/indicator/macd", controllers.GetMACDData)
 	router.Get("/indicator/rsi", controllers.GetRSIData)
-
+	router.Get("/indicator/bbands", controllers.GetBBANDSData)
 }

@@ -167,3 +167,46 @@ func GetRSIData(c *fiber.Ctx) error {
 	return utils.SendResponse(c, res)
 
 }
+
+func GetBBANDSData(c *fiber.Ctx) error {
+	// Get and validate symbol
+	symbol := c.Query("symbol")
+
+	// Get and validate interval
+	interval := c.Query("interval")
+
+	// Get and validate outputsize
+	outputSize := c.QueryInt("outputsize", 30)
+
+	// Get start and end date
+	startDate := c.Query("start_date", "2006-01-01 00:00:00")
+	endDate := c.Query("end_date", time.Now().Format("2006-01-02 15:04:05"))
+
+	// Get and validate time zone
+	tz := c.Query("time_zone", "UTC")
+
+	err := utils.ValidateBaseParams(outputSize, symbol, interval, tz, startDate, endDate)
+	if err != nil {
+		return utils.SendError(c, err, fiber.StatusBadRequest)
+	}
+
+	// get params for this indicator
+	timePeriod := c.QueryInt("time_period", 10)
+	sd := c.QueryInt("sd", 2)
+	maType := c.Query("ma_type", "SMA")
+	seriesType := c.Query("series_type", "close")
+
+	// validate params for this custom indicator
+	err = utils.ValidateBBANDSParams(timePeriod, maType, seriesType)
+	if err != nil {
+		return utils.SendError(c, err, fiber.StatusBadRequest)
+	}
+	// fetch data from twelve data api
+	res, err := twelve_data.FetchBBANDS(outputSize, sd, timePeriod, symbol, interval, tz, startDate, endDate, maType, seriesType)
+	if err != nil {
+		return utils.SendError(c, err, fiber.StatusInternalServerError)
+	}
+
+	return utils.SendResponse(c, res)
+
+}
