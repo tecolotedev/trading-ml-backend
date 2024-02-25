@@ -114,3 +114,53 @@ func FetchMACD(outputSize, fastPeriod, signalPeriod, slowPeriod int, symbol, int
 	return
 
 }
+
+type RSIResponse struct {
+	Values []utils.RSIValueResponse
+}
+
+func FetchRSI(outputSize, timePeriod int, symbol, interval, tz, startDate, endDate string) (values []utils.RSIValueParsed, err error) {
+	var key = config.EnvVars.TWELVE_DATA_KEY
+
+	url := fmt.Sprintf(
+		"%srsi?symbol=%s&interval=%s&outputsize=%d&timezone=%s&start_date=%s&end_date=%s&time_period=%d&apikey=%s",
+		twelveDataUrl,
+		utils.Symbols[symbol],
+		utils.Intervals[interval],
+		outputSize,
+		tz,
+		startDate,
+		endDate,
+		timePeriod,
+		key,
+	)
+
+	res, err := http.Get(url)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	var macdResponse = RSIResponse{}
+	err = json.Unmarshal(body, &macdResponse)
+
+	if err != nil {
+		utils.Log.ErrorLog(err, pack)
+		err = fmt.Errorf("error fetching financial data, please try it later")
+		return
+	}
+
+	// parse values from string to float
+	values = utils.ParseRSIValues(macdResponse.Values)
+
+	return
+
+}

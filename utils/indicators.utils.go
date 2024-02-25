@@ -143,3 +143,35 @@ func ValidateMACDParams(fastPeriod, signalPeriod, slowPeriod int, seriesType str
 	err = ValidateSeriesType(seriesType)
 	return
 }
+
+/*
+ * Utils for Relative Strength Index (RSI) indicator
+ */
+
+type RSIValueResponse struct {
+	Datetime string
+	RSI      string
+}
+type RSIValueParsed struct {
+	Datetime string
+	RSI      float64
+}
+
+func ParseRSIValues(inputValues []RSIValueResponse) (values []RSIValueParsed) {
+	for _, v := range inputValues {
+		value := RSIValueParsed{
+			Datetime: v.Datetime,
+		}
+
+		rsi, _ := strconv.ParseFloat(v.RSI, 64)
+		value.RSI = rsi
+
+		values = append(values, value)
+	}
+	return
+}
+
+func ValidateRSIParams(timePeriod int) (err error) {
+	err = ValidatePeriod(timePeriod, "time_period")
+	return
+}
