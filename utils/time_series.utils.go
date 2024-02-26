@@ -115,7 +115,7 @@ func ValidateBaseParams(outputSize int, symbol, interval, tz, startDate, endDate
 	return
 }
 
-type ValueParsed struct {
+type Bar struct {
 	Datetime string
 	Open     float64
 	High     float64
@@ -124,7 +124,7 @@ type ValueParsed struct {
 	Volume   int
 }
 
-type ValueResponse struct {
+type BarString struct {
 	Datetime string
 	Open     string
 	High     string
@@ -133,9 +133,9 @@ type ValueResponse struct {
 	Volume   string
 }
 
-func ParseValuesToFloat(inputValues []ValueResponse) (values []ValueParsed) {
+func ParseValuesToFloat(inputValues []BarString) (values []Bar) {
 	for _, v := range inputValues {
-		value := ValueParsed{
+		value := Bar{
 			Datetime: v.Datetime,
 		}
 

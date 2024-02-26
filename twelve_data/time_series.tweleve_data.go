@@ -15,10 +15,10 @@ const pack = "twelve_data"
 const twelveDataUrl = "https://api.twelvedata.com/"
 
 type TimeSeriesResponse struct {
-	Values []utils.ValueResponse
+	Values []utils.BarString
 }
 
-func FetchTimeSeries(outputSize int, symbol, interval, tz, startDate, endDate string) (values []utils.ValueParsed, err error) {
+func FetchTimeSeries(outputSize int, symbol, interval, tz, startDate, endDate string) (values []utils.Bar, err error) {
 	var key = config.EnvVars.TWELVE_DATA_KEY
 
 	// build url
