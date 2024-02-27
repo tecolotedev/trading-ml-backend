@@ -192,3 +192,25 @@ func GetBBANDS(c *fiber.Ctx) error {
 
 	return utils.SendResponse(c, output)
 }
+
+func GetPTC(c *fiber.Ctx) error {
+	// get params for this indicator
+	fillNA := c.Query("fill_na", "Drop")
+	seriesType := c.Query("series_type", "close")
+
+	bars := new([]utils.Bar)
+
+	if err := c.BodyParser(bars); err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
+	}
+
+	input := indicators.PTCInput{
+		Values:     *bars,
+		FillNA:     fillNA,
+		SeriesType: seriesType,
+	}
+	output := indicators.GetPTC(input)
+
+	return utils.SendResponse(c, output)
+}
