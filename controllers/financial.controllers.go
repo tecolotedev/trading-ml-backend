@@ -101,6 +101,35 @@ func GetEMA(c *fiber.Ctx) error {
 	return utils.SendResponse(c, output)
 }
 
+func GetRSI(c *fiber.Ctx) error {
+
+	// get params for this indicator
+	fillNA := c.Query("fill_na", "Drop")
+	seriesType := c.Query("series_type", "close")
+	periods := c.QueryInt("periods", 14)
+
+	bars := new([]utils.Bar)
+
+	if err := c.BodyParser(bars); err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
+	}
+
+	if len(*bars) <= periods {
+		return utils.SendError(c, fmt.Errorf("bars lenght needs to be greater than periods"), fiber.StatusBadRequest)
+	}
+
+	input := indicators.RSIInput{
+		SeriesType: seriesType,
+		Values:     *bars,
+		FillNA:     fillNA,
+		Periods:    periods,
+	}
+	output := indicators.GetRSI(input)
+
+	return utils.SendResponse(c, output)
+}
+
 // func GetMACDData(c *fiber.Ctx) error {
 
 // 	// Get and validate symbol
