@@ -16,12 +16,12 @@ type SMAOuput struct {
 	Value    float64
 }
 
-type MakeSMAInput struct {
+type MakeIndicatorInput struct {
 	Datetime string
 	value    float64
 }
 
-func MakeSMA(input []MakeSMAInput, fillNA string, periods int) (output []SMAOuput) {
+func MakeSMA(input []MakeIndicatorInput, fillNA string, periods int) (output []SMAOuput) {
 	amount := 0.0
 
 	for i := 0; i < len(input); i++ {
@@ -46,28 +46,28 @@ func MakeSMA(input []MakeSMAInput, fillNA string, periods int) (output []SMAOupu
 }
 
 func GetSMA(input SMAInput) (output []SMAOuput) {
-	inputValues := []MakeSMAInput{}
+	inputValues := []MakeIndicatorInput{}
 
 	switch input.SeriesType {
 
 	case "open":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeSMAInput{Datetime: v.Datetime, value: v.Open})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Open})
 		}
 		return MakeSMA(inputValues, input.FillNA, input.Periods)
 	case "high":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeSMAInput{Datetime: v.Datetime, value: v.High})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.High})
 		}
 		return MakeSMA(inputValues, input.FillNA, input.Periods)
 	case "low":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeSMAInput{Datetime: v.Datetime, value: v.Low})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Low})
 		}
 		return MakeSMA(inputValues, input.FillNA, input.Periods)
 	case "close":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeSMAInput{Datetime: v.Datetime, value: v.Close})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Close})
 		}
 		return MakeSMA(inputValues, input.FillNA, input.Periods)
 	}

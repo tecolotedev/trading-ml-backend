@@ -16,12 +16,7 @@ type EMAOuput struct {
 	Value    float64
 }
 
-type MakeEMAInput struct {
-	Datetime string
-	value    float64
-}
-
-func MakeEMA(input []MakeEMAInput, fillNA string, periods int) (output []EMAOuput) {
+func MakeEMA(input []MakeIndicatorInput, fillNA string, periods int) (output []EMAOuput) {
 	lastEma := 0.0
 	amount := 0.0
 	alpha := 2.0 / float64((periods + 1))
@@ -60,28 +55,28 @@ func MakeEMA(input []MakeEMAInput, fillNA string, periods int) (output []EMAOupu
 }
 
 func GetEMA(input EMAInput) (output []EMAOuput) {
-	inputValues := []MakeEMAInput{}
+	inputValues := []MakeIndicatorInput{}
 
 	switch input.SeriesType {
 
 	case "open":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeEMAInput{Datetime: v.Datetime, value: v.Open})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Open})
 		}
 		return MakeEMA(inputValues, input.FillNA, input.Periods)
 	case "high":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeEMAInput{Datetime: v.Datetime, value: v.High})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.High})
 		}
 		return MakeEMA(inputValues, input.FillNA, input.Periods)
 	case "low":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeEMAInput{Datetime: v.Datetime, value: v.Low})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Low})
 		}
 		return MakeEMA(inputValues, input.FillNA, input.Periods)
 	case "close":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeEMAInput{Datetime: v.Datetime, value: v.Close})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Close})
 		}
 		return MakeEMA(inputValues, input.FillNA, input.Periods)
 	}

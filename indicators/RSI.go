@@ -18,12 +18,7 @@ type RSIOuput struct {
 	Value    float64
 }
 
-type MakeRSIInput struct {
-	Datetime string
-	value    float64
-}
-
-func MakeRSI(input []MakeRSIInput, fillNA string, periods int) (output []RSIOuput) {
+func MakeRSI(input []MakeIndicatorInput, fillNA string, periods int) (output []RSIOuput) {
 
 	totalLoss := 0.0
 	totalGain := 0.0
@@ -92,28 +87,28 @@ func MakeRSI(input []MakeRSIInput, fillNA string, periods int) (output []RSIOupu
 }
 
 func GetRSI(input RSIInput) (output []RSIOuput) {
-	inputValues := []MakeRSIInput{}
+	inputValues := []MakeIndicatorInput{}
 
 	switch input.SeriesType {
 
 	case "open":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeRSIInput{Datetime: v.Datetime, value: v.Open})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Open})
 		}
 		return MakeRSI(inputValues, input.FillNA, input.Periods)
 	case "high":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeRSIInput{Datetime: v.Datetime, value: v.High})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.High})
 		}
 		return MakeRSI(inputValues, input.FillNA, input.Periods)
 	case "low":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeRSIInput{Datetime: v.Datetime, value: v.Low})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Low})
 		}
 		return MakeRSI(inputValues, input.FillNA, input.Periods)
 	case "close":
 		for _, v := range input.Values {
-			inputValues = append(inputValues, MakeRSIInput{Datetime: v.Datetime, value: v.Close})
+			inputValues = append(inputValues, MakeIndicatorInput{Datetime: v.Datetime, value: v.Close})
 		}
 		return MakeRSI(inputValues, input.FillNA, input.Periods)
 	}

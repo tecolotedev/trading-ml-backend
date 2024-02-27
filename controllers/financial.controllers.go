@@ -130,6 +130,39 @@ func GetRSI(c *fiber.Ctx) error {
 	return utils.SendResponse(c, output)
 }
 
+func GetMACD(c *fiber.Ctx) error {
+
+	// get params for this indicator
+	fillNA := c.Query("fill_na", "Drop")
+	seriesType := c.Query("series_type", "close")
+	fastPeriods := c.QueryInt("fast_periods", 12)
+	slowPeriods := c.QueryInt("slow_periods", 26)
+	macdPeriods := c.QueryInt("macd_periods", 9)
+
+	bars := new([]utils.Bar)
+
+	if err := c.BodyParser(bars); err != nil {
+		utils.Log.ErrorLog(err, pack)
+		return utils.SendError(c, fmt.Errorf("error in body request"), fiber.StatusBadRequest)
+	}
+
+	if len(*bars) <= fastPeriods && len(*bars) <= slowPeriods && len(*bars) <= macdPeriods {
+		return utils.SendError(c, fmt.Errorf("bars lenght needs to be greater than periods"), fiber.StatusBadRequest)
+	}
+
+	input := indicators.MACDInput{
+		SeriesType:  seriesType,
+		Values:      *bars,
+		FillNA:      fillNA,
+		SlowPeriods: slowPeriods,
+		FastPeriods: fastPeriods,
+		MACDPeriods: macdPeriods,
+	}
+	output := indicators.GetMACD(input)
+
+	return utils.SendResponse(c, output)
+}
+
 // func GetMACDData(c *fiber.Ctx) error {
 
 // 	// Get and validate symbol
